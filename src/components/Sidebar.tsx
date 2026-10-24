@@ -9,8 +9,8 @@ const NAV: { v: View; label: string; icon: string; c: string }[] = [
 export default function Sidebar({ view, setView, onAdd }: { view: View; setView: (v: View) => void; onAdd: () => void }) {
   return (
     <nav className="side" aria-label="Main">
-      <div className="logo">ReelVault</div>
-      <p className="hand tagline">save, discover,<br />revisit</p>
+      <div className="logo">REEL HOLE</div>
+      <p className="hand tagline">Fall into the scroll.<br />Keep the good stuff.</p>
       {NAV.map(n => (
         <button key={n.v} className="tab" style={{ ['--c' as string]: n.c }} aria-current={view === n.v ? 'page' : undefined} onClick={() => setView(n.v)}>
           <Icon name={n.icon} /><span>{n.label}</span>

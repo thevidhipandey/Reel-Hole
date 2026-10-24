@@ -37,6 +37,8 @@ export default function AuthScreen({ recover = false }: { recover?: boolean }) {
   return (
     <div className="auth">
       <Torn className="authcard"><Tape /><Sparkles />
+        <div className="brand">REEL HOLE</div>
+        <p className="hand big tag">Fall into the scroll. Keep the good stuff.</p>
         <h1>{TITLE[mode]}</h1>
         <form onSubmit={submit} noValidate>
           {mode !== 'recover' && <label>Email<input type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} /></label>}

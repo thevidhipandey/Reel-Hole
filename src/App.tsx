@@ -13,13 +13,13 @@ import Settings from './components/Settings'
 
 export default function App() {
   const { session, loading, recovery } = useSession()
-  if (loading) return <div className="boot hand big">Opening ReelVault…</div>
+  if (loading) return <div className="boot hand big">Opening REEL HOLE…</div>
   if (recovery) return <AuthScreen recover />
-  return session ? <Shell email={session.user.email ?? ''} /> : <AuthScreen />
+  return session ? <Shell email={session.user.email ?? ''} userId={session.user.id} /> : <AuthScreen />
 }
 
-function Shell({ email }: { email: string }) {
-  const lib = useLibrary()
+function Shell({ email, userId }: { email: string; userId: string }) {
+  const lib = useLibrary(userId)
   const [stack, setStack] = useState<Route[]>([{ name: 'home' }])
   const [adding, setAdding] = useState<{ folderId: string | null } | null>(null)
   const [toast, setToast] = useState('')

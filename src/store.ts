@@ -3,20 +3,22 @@ import { useEffect, useRef, useState } from 'react'
 import { supabase } from './lib/supabase'
 import type { Folder, Reel, Resource, Tone } from './types'
 import { parseInstagram } from './lib/url'
+import { toCover } from './lib/image'
 
 const REELS = '*, resources(*)'
+const SIGN = 60 * 60 * 24 // cover image links last a day; they are re-created on every load
 const toResource = (x: any): Resource => ({ id: x.id, name: x.name, url: x.url, type: x.type, tried: x.tried })
 const toFolder = (f: any): Folder => ({ id: f.id, name: f.name, color: f.color, doodle: f.doodle })
 const toReel = (r: any): Reel => ({
   id: r.id, url: r.instagram_url, shortcode: r.shortcode, title: r.title, creator: r.creator, notes: r.notes,
-  folderId: r.folder_id, favourite: r.favourite, savedAt: r.saved_at, thumbnailUrl: r.thumbnail_url ?? undefined,
+  folderId: r.folder_id, favourite: r.favourite, savedAt: r.saved_at, coverPath: r.thumbnail_url ?? undefined,
   resources: ((r.resources ?? []) as any[]).sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))).map(toResource),
 })
 export type NewReel = { url: string; title: string; creator: string; notes: string; folderId: string | null }
 export type Result = { ok: true } | { ok: false; error: string }
 
 // Screens update instantly; the database write follows. If a write fails we show a message and reload from the database.
-export function useLibrary() {
+export function useLibrary(userId: string) {
   const [folders, setFolders] = useState<Folder[]>([])
   const [reels, setReels] = useState<Reel[]>([])
   const [loading, setLoading] = useState(true)
@@ -30,7 +32,17 @@ export function useLibrary() {
       supabase.from('reels').select(REELS).order('saved_at', { ascending: false }),
     ])
     if (f.error || r.error) setError("Couldn't load your library. Check your connection and refresh.")
-    else { setFolders(f.data.map(toFolder)); setReels(r.data.map(toReel)) }
+    else {
+      const mapped = r.data.map(toReel)
+      const paths = mapped.map(x => x.coverPath).filter((p): p is string => !!p)
+      if (paths.length) {
+        const s = await supabase.storage.from('covers').createSignedUrls(paths, SIGN)
+        const m = new Map<string, string>()
+        ;(s.data ?? []).forEach(x => { if (x.path && x.signedUrl) m.set(x.path, x.signedUrl) })
+        mapped.forEach(x => { if (x.coverPath) x.thumbnailUrl = m.get(x.coverPath) })
+      }
+      setFolders(f.data.map(toFolder)); setReels(mapped)
+    }
     setLoading(false)
   }
   useEffect(() => { load() }, [])
@@ -71,6 +83,8 @@ export function useLibrary() {
   }
   const toggleFav = (id: string) => { const cur = reels.find(r => r.id === id); if (cur) updateReel(id, { favourite: !cur.favourite }) }
   const deleteReel = async (id: string) => {
+    const cover = reels.find(r => r.id === id)?.coverPath
+    if (cover) supabase.storage.from('covers').remove([cover])
     setReels(x => x.filter(v => v.id !== id))
     const { error: e } = await supabase.from('reels').delete().eq('id', id)
     if (e) fail("Couldn't delete that reel.")
@@ -108,6 +122,29 @@ export function useLibrary() {
     const { error: e } = await supabase.from('resources').delete().eq('id', rid)
     if (e) fail("Couldn't delete that resource.")
   }
-  return { folders, reels, loading, error, clearError: () => setError(''), addReel, toggleFav, updateReel, deleteReel, addFolder, renameFolder, deleteFolder, addResource, setResourceTried, deleteResource }
+  // Optional cover image: shrunk in the browser, stored privately under your own user folder.
+  const setCover = async (reelId: string, file: File): Promise<boolean> => {
+    try {
+      const blob = await toCover(file)
+      const path = `${userId}/${reelId}-${Date.now()}.jpg`
+      const up = await supabase.storage.from('covers').upload(path, blob, { contentType: 'image/jpeg' })
+      if (up.error) return false
+      const old = reels.find(r => r.id === reelId)?.coverPath
+      const { error: e } = await supabase.from('reels').update({ thumbnail_url: path }).eq('id', reelId)
+      if (e) { await supabase.storage.from('covers').remove([path]); return false }
+      const signed = await supabase.storage.from('covers').createSignedUrl(path, SIGN)
+      setReels(x => x.map(v => (v.id === reelId ? { ...v, coverPath: path, thumbnailUrl: signed.data?.signedUrl } : v)))
+      if (old) await supabase.storage.from('covers').remove([old])
+      return true
+    } catch { return false }
+  }
+  const removeCover = async (reelId: string) => {
+    const old = reels.find(r => r.id === reelId)?.coverPath
+    setReels(x => x.map(v => (v.id === reelId ? { ...v, coverPath: undefined, thumbnailUrl: undefined } : v)))
+    const { error: e } = await supabase.from('reels').update({ thumbnail_url: null }).eq('id', reelId)
+    if (e) { fail("Couldn't remove that cover."); return }
+    if (old) await supabase.storage.from('covers').remove([old])
+  }
+  return { folders, reels, loading, error, clearError: () => setError(''), addReel, toggleFav, updateReel, deleteReel, addFolder, renameFolder, deleteFolder, addResource, setResourceTried, deleteResource, setCover, removeCover }
 }
 export type Library = ReturnType<typeof useLibrary>

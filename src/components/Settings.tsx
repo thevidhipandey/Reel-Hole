@@ -5,7 +5,7 @@ import { Torn } from './Scrap'
 export default function Settings({ lib, email }: { lib: Library; email: string }) {
   const exportData = () => {
     const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), folders: lib.folders, reels: lib.reels }, null, 2)], { type: 'application/json' })
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'reelvault-export.json'; a.click(); URL.revokeObjectURL(a.href)
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'reelhole-export.json'; a.click(); URL.revokeObjectURL(a.href)
   }
   return (
     <Torn className="settings">

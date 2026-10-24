@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import type { FormEvent } from 'react'
+import { useRef, useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
 import type { Library } from '../store'
 import type { Reel } from '../types'
 import { Doodle, Tape, Torn } from './Scrap'
@@ -11,9 +11,21 @@ export default function ReelDetail({ lib, id, onBack }: { lib: Library; id: stri
   const [sure, setSure] = useState(false)
   const [res, setRes] = useState({ name: '', url: '', type: 'Tool' })
   const [err, setErr] = useState('')
+  const [coverBusy, setCoverBusy] = useState(false)
+  const [coverErr, setCoverErr] = useState('')
+  const fileRef = useRef<HTMLInputElement>(null)
   if (!reel) return <Torn className="empty"><p className="hand big">That reel is gone.</p><button className="btn" onClick={onBack}>Go back</button></Torn>
   const folder = lib.folders.find(f => f.id === reel.folderId)
   const set = (p: Partial<Reel>) => lib.updateReel(reel.id, p)
+  const onFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0]
+    e.target.value = ''
+    if (!f) return
+    setCoverBusy(true); setCoverErr('')
+    const ok = await lib.setCover(reel.id, f)
+    setCoverBusy(false)
+    if (!ok) setCoverErr("Couldn't add that image. Try a different photo.")
+  }
   const addRes = async (e: FormEvent) => {
     e.preventDefault()
     if (!res.name.trim()) { setErr('Give the resource a name.'); return }
@@ -36,8 +48,14 @@ export default function ReelDetail({ lib, id, onBack }: { lib: Library; id: stri
                 {reel.thumbnailUrl ? <img src={reel.thumbnailUrl} alt="" /> : <><Doodle name={folder?.doodle ?? 'mark'} size={56} /><span className="hand">thumbnail on holiday</span></>}</div>}
             <div className="actions pad"><button className="btn ghost" onClick={() => setPlay(!play)}>{play ? 'Hide player' : 'Play here'}</button>
               <a className="btn" href={reel.url} target="_blank" rel="noreferrer">Open on Instagram</a></div>
+            <div className="actions pad">
+              <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile} />
+              <button className="btn ghost" disabled={coverBusy} onClick={() => fileRef.current?.click()}>{coverBusy ? 'Adding…' : reel.thumbnailUrl ? 'Change cover' : 'Add cover image'}</button>
+              {reel.coverPath && <button className="link" onClick={() => lib.removeCover(reel.id)}>Remove cover</button>}
+            </div>
+            <p className="error" role="alert">{coverErr}</p>
           </div>
-          <p className="meta">Saved {new Date(reel.savedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}. If the creator removes this reel, your notes and resources stay.</p>
+          <p className="meta">Saved {new Date(reel.savedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}. Tip: screenshot the reel's first frame and use it as the cover. If the creator removes this reel, your notes and resources stay.</p>
         </div>
         <div className="form">
           <label>Title<input value={reel.title} onChange={e => set({ title: e.target.value })} placeholder="Untitled Reel" maxLength={200} /></label>

@@ -39,3 +39,5 @@ label,legend{font-weight:600;font-size:14px;display:flex;flex-direction:column;g
 @media(max-width:820px){.detail{grid-template-columns:1fr}}
 .auth{min-height:100vh;display:grid;place-items:center;padding:24px}.authcard{width:min(440px,100%);padding:40px 38px 32px;display:flex;flex-direction:column;gap:14px}.authcard h1{font-size:30px}.authcard form{display:flex;flex-direction:column;gap:14px}.linkrow{display:flex;gap:16px;flex-wrap:wrap}.ok{color:#2F6B4F;margin:0;font-size:14px}
 .boot{min-height:50vh;display:grid;place-items:center}.banner{background:#fff;border-left:6px solid var(--rose);padding:10px 14px;margin-bottom:16px;display:flex;gap:12px;justify-content:space-between;box-shadow:0 3px 8px rgba(64,55,68,.12)}.settings{padding:36px;display:flex;flex-direction:column;gap:14px;align-items:flex-start;max-width:560px}
+.logo{letter-spacing:.06em;font-size:24px}.tagline{font-size:23px}
+.brand{font:700 30px var(--serif);letter-spacing:.08em}.authcard .tag{margin:-6px 0 6px;color:var(--muted)}

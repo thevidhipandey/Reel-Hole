@@ -17,7 +17,7 @@ export default function Library({ lib, title, reels, hero, onAdd, onOpen, onFold
       <div className="hero">
         <Torn className="head"><Tape /><Sparkles />
           <div><h1>{hero ? 'Your little corner of the internet.' : title}</h1>
-            <p className="sub">{hero ? 'A pretty place to keep the things you never want to lose.' : `${reels.length} saved`}</p></div></Torn>
+            <p className="sub">{hero ? 'Fall into the scroll. Keep the good stuff.' : `${reels.length} saved`}</p></div></Torn>
         {hero && <section className="panel card" aria-label="Folders"><h2>Your folders</h2>
           <div className="mini">{lib.folders.slice(0, 3).map(f => (
             <button key={f.id} type="button" onClick={() => onFolder?.(f.id)} className="folder sm" style={{ ['--c' as string]: `var(--${f.color})` }}><Doodle name={f.doodle} size={22} /><b className="hand">{f.name}</b>
