@@ -2,7 +2,7 @@
 
 **Your personal library for ideas worth keeping.**
 
-ReelVault is a personal library for saving Instagram Reels, organising them into folders, and keeping useful links, resources, and notes together. It’s designed to make those *“I’ll come back to this later”* saves easier to find when you actually need them.
+Reel Hole is a personal library for saving Instagram Reels, organising them into folders, and keeping useful links, resources, and notes together. It’s designed to make those *“I’ll come back to this later”* saves easier to find when you actually need them.
 
 Instead of endlessly scrolling through saved posts or digging through DMs, ReelVault gives your favourite ideas a place of their own.
 
@@ -10,7 +10,7 @@ Instead of endlessly scrolling through saved posts or digging through DMs, ReelV
 
 We save tutorials, coding tips, creative inspiration, recommendations, and random internet discoveries every day. But saving something is easy — finding it again is the hard part.
 
-ReelVault aims to bridge that gap with a simple, searchable library built around the way we collect and revisit ideas.
+Reel Hole aims to bridge that gap with a simple, searchable library built around the way we collect and revisit ideas.
 
 ## ✨ Planned Features
 
@@ -24,7 +24,7 @@ ReelVault aims to bridge that gap with a simple, searchable library built around
 
 ## 🎨 The Design
 
-ReelVault takes inspiration from Pinterest-style scrapbooks and personal digital libraries — with soft pastels, playful details, and a little personality.
+Reel Hole takes inspiration from Pinterest-style scrapbooks and personal digital libraries — with soft pastels, playful details, and a little personality.
 
 The goal is to make organising ideas feel enjoyable without sacrificing speed or usability.
 
@@ -40,12 +40,16 @@ The goal is to make organising ideas feel enjoyable without sacrificing speed or
 
 ## 🔒 Privacy & Scope
 
-ReelVault is intended to be a private, personal collection. It stores Reel links and user-added information rather than downloading or hosting Instagram videos. Access to the original Reel still depends on its availability and Instagram's access restrictions.
+Reel Hole is intended to be a private, personal collection. It stores Reel links and user-added information rather than downloading or hosting Instagram videos. Access to the original Reel still depends on its availability and Instagram's access restrictions.
 
 ## 🌱 Why I'm Building This
 
-ReelVault is a passion project and a hands-on way to learn frontend development, backend fundamentals, databases, authentication, and application security while building something I would genuinely use.
+Reel Hole is a passion project and a hands-on way to learn frontend development, backend fundamentals, databases, authentication, and application security while building something I would genuinely use.
 
 ---
 
 *Save the idea. Keep the context. Find it when you need it.* 💜
+
+## Author
+
+**Vidhi Pandey**
